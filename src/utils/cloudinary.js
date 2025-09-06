@@ -10,7 +10,7 @@ import fs from 'fs'
     });
     
     // Upload file
-    const uploadOnCludinary =  async (localFilePath) => {
+    const uploadOnCloudinary =  async (localFilePath) => {
         try{
             if (!localFilePath) return null
             //upload the file from hereon
@@ -24,4 +24,4 @@ import fs from 'fs'
     }
 
     
-export {uploadOnCludinary}
+export {uploadOnCloudinary}
