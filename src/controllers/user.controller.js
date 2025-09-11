@@ -4,7 +4,7 @@ import {User} from "../models/user.models.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from 'jsonwebtoken'
-import { SchemaTypeOptions } from "mongoose"
+import mongoose,{ SchemaTypeOptions } from "mongoose"
 
 // Access and Refresh Token
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -159,9 +159,14 @@ const logoutUser= asyncHandler(async (req, res) => {
          now this method can be used for like, comment etc */
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            // $set: {
+            //     refreshToken: undefined //use null instead
+            // } // thise method was a little ineffecient
+            
+            $unset: {
+                refreshTiken: 1 // this removes the field from document
             }
+            
         },
         {
             new: true
@@ -410,7 +415,9 @@ const getWatchHistory = asyncHandler(async (req,res) => {
             $match: {
                 _id: new mongoose.Types.ObjectId(req.user.id)
             },
-            $lookup: {
+        },
+            {
+                $lookup: {
                 from: "videos",
                 localField: "watchHistory",
                 foreignField: "_id",
@@ -419,7 +426,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
                 pipeline: [
                     {
                         $lookup: {
-                            form: "users",
+                            from: "users",
                             localField: "owner",
                             foreignField: "_id",
                             as: "owner",
@@ -444,7 +451,8 @@ const getWatchHistory = asyncHandler(async (req,res) => {
                 ]
 
             }
-        }
+            }
+        
     ])
     return res
     .status(200)
